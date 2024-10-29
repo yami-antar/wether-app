@@ -1,0 +1,102 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="card">
+        <div class="search">
+            <input type="text" placeholder="Enter city name" spellcheck="false" id="cityInput">
+            <button><img src="Pictures/search.png" style="height: 30px;" id="handleSearch"></button>
+        </div>
+        <div>
+            <p id="error" style="color: red;  position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                text-align: center; font-size: smaller; height: 20px; text-transform: capitalize; font-weight: bold;">
+            </p>
+        </div>
+        <div class="weather">
+            <img id="wetherImg" src="">
+            <h1 class="temp" id="tempId"></h1>
+            <h2 class="city" id="cityId"></h2>
+
+        </div>
+        <div style="display: flex
+            ; justify-content: center; gap: 100px;">
+            <div>
+                <div class="col">
+                    <img src="Pictures/humidity.png">
+                </div>
+                <p class="humidity" id="humidityId"></p>
+                <p>humidity</p>
+            </div>
+            <div>
+                <div class="col">
+                    <img id="wetherImg" src="Pictures/wind.png">
+                    <p class="wind" id="windId"></p>
+                    <p>speed</p>
+                </div>
+            </div>
+        </div>
+        <p style="color: gray;">copyright @antarkalia</p>
+    </div>
+    <script>
+
+        const apiKey = "b4f095ac8a227d0e21dff13101cb83f9";
+        const cityName = document.getElementById("cityInput");
+        const searchBTN = document.getElementById("handleSearch")
+        const apiUrl = `https://api.openweathermap.org/data/2.5/weather?units=metric&q=`;
+        searchBTN.addEventListener("click", () => {
+            if (cityName.value) {
+                checkWeather(cityName.value)
+            }
+            else {
+                document.getElementById("error").innerHTML = "Please Enter a Place Name";
+            }
+        })
+
+
+
+        function getWeatherCondition(temp) {
+            if (temp <= 0) {
+                return "snow";
+            } else if (temp > 0 && temp <= 10) {
+                return "clouds";
+            } else if (temp > 10 && temp <= 20) {
+                return "drizzle";
+            } else if (temp > 20 && temp <= 30) {
+                return "mist";
+            } else if (temp > 30 && temp <= 35) {
+                return "clear";
+            } else {
+                return "hot";
+            }
+        }
+
+        async function checkWeather(city) {
+            const response = await fetch(apiUrl + city + `&appid=${apiKey}`);
+            var data = await response.json();
+            if (data.cod == 404) {
+                document.getElementById("error").innerHTML = data.message;
+            } else {
+                let wetherCondition = getWeatherCondition(data.main.temp);
+                document.getElementById("error").innerHTML = "";
+                document.getElementById("tempId").innerHTML = Math.ceil(data.main.temp) + "°C";
+                document.getElementById("cityId").innerHTML = data.name;
+                document.getElementById("humidityId").innerHTML = data.main.humidity + " %";
+                document.getElementById("windId").innerHTML = data.wind.speed + " km/h";
+                document.getElementById("wetherImg").src = `Pictures/${wetherCondition}.png`;
+                document.getElementById("wetherImg").src = `Pictures/${wetherCondition}.png`;
+            }
+
+        }
+        window.onload = checkWeather("bhubaneswar");
+
+    </script>
+</body>
+
+</html>
